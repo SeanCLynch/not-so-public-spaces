@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Public Space vs. Community</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+
+<!-- Lengend div -->
+<div id='legend' style='display:none;'>
+  <strong>Public vs. Private Community Meeting Places</strong>
+  <nav class='legend clearfix'>
+    There is an interesting difference between what the City of Philadelphia deems public space, and where communities of interest gather regularly. This discrepancy perhaps indicates new patterns of community interaction due to new technologies or forms of community.</br>
+    <span style='color:green;'>Green Squares</span> represent public spaces such as parks and recreation centers.</br>
+    <span style='color:blue;'>Blue Markers</span> represent Meetup locations in Philly.</br>
+    <small>Sources: <a href="http://www.meetup.com">Meetup.com</a>, <a href="https://www.opendataphilly.org/">OpenDataPhilly</a></small></br>
+</div>
+
+<!-- Add Omnivore -->
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+<!-- Map div  -->
+<div id='map'></div>
+
+<script>
+
+// Set up map.
+L.mapbox.accessToken = 'pk.eyJ1Ijoic2VhbmNseW5jaCIsImEiOiI5NjY2NDAzZjcwYmIwZDY1NTQzYmQ3NDhjNDllOGEzOSJ9.cIpGBLkCcvXdAMW60NuPuQ';
+var map = L.mapbox.map('map', 'mapbox.light')
+    .setView([39.9515, -75.1695], 13);
+
+// Add legend and style.
+map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+L.mapbox.styleLayer('mapbox://styles/seanclynch/cinak096u000hb4nn7cc743nm').addTo(map);
+
+// Add data with style.
+omnivore.csv('./MeetUpLocationData2.csv')
+	.on('ready', function (layer) {
+		this.eachLayer(function(marker) {
+			marker.setIcon(L.mapbox.marker.icon({
+				'marker-color': '#47D6D6',
+				'marker-symbol': 'star',
+				'marker-size': 'small'
+			}));
+			marker.bindPopup(marker.toGeoJSON().properties.title + " @\n" + marker.toGeoJSON().properties.description);
+		});
+	}).addTo(map);
+
+</script>
+
+</body>
+</html>
